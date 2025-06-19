@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disease Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: linear-gradient(120deg, #89f7fe 0%, #66a6ff 100%);
+            /* You can use an image background instead: */
+            /* background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1500&q=80') no-repeat center center fixed; background-size: cover; */
+        }
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: rgba(255,255,255,0.95);
+            padding: 30px 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.13);
+        }
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 24px;
+        }
+        form { display: flex; flex-wrap: wrap; gap: 16px; }
+        label { flex: 1 0 120px; font-weight: 500; }
+        input, select {
+            flex: 2 0 200px;
+            padding: 8px;
+            border: 1px solid #b2bec3;
+            border-radius: 6px;
+            font-size: 15px;
+            background: #f8fafc;
+        }
+        .form-row { width: 100%; display: flex; align-items: center; }
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(90deg, #2980b9 0%, #6dd5fa 100%);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background 0.2s;
+        }
+        .btn:hover {
+            background: linear-gradient(90deg, #1c5d85 0%, #2980b9 100%);
+        }
+        #result {
+            margin-top: 28px;
+            text-align: center;
+            font-size: 20px;
+            color: #27ae60;
+            font-weight: 600;
+        }
+        .hint {
+            font-size: 12px;
+            color: #636e72;
+            margin-left: 8px;
+        }
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            label, input, select { flex: 1 0 100%; }
+            .form-row { flex-direction: column; align-items: stretch; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Disease Prediction</h2>
+        <form id="predictForm">
+            <div class="form-row">
+                <label for="Ages">Age <span class="hint">(years, 1-120)</span></label>
+                <input type="number" id="Ages" name="Ages" min="1" max="120" placeholder="e.g. 25" required>
+            </div>
+            <div class="form-row">
+                <label for="Gender">Gender</label>
+                <select id="Gender" name="Gender" required>
+                    <option value="">Select</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label for="Height">Height <span class="hint">(cm, 50-250)</span></label>
+                <input type="number" id="Height" name="Height" min="50" max="250" placeholder="e.g. 170" required>
+            </div>
+            <div class="form-row">
+                <label for="Weight">Weight <span class="hint">(kg, 10-250)</span></label>
+                <input type="number" id="Weight" name="Weight" min="10" max="250" placeholder="e.g. 65" required>
+            </div>
+            <div class="form-row">
+                <label for="Activity_Level">Activity Level</label>
+                <select id="Activity_Level" name="Activity Level" required>
+                    <option value="">Select</option>
+                    <option value="Sedentary">Sedentary</option>
+                    <option value="Lightly Active">Lightly Active</option>
+                    <option value="Moderately Active">Moderately Active</option>
+                    <option value="Very Active">Very Active</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label for="Dietary_Preference">Dietary Preference</label>
+                <select id="Dietary_Preference" name="Dietary Preference" required>
+                    <option value="">Select</option>
+                    <option value="Omnivore">Omnivore</option>
+                    <option value="Vegetarian">Vegetarian</option>
+                    <option value="Vegan">Vegan</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label for="Daily_Calorie_Target">Daily Calorie Target <span class="hint">(kcal, 800-5000)</span></label>
+                <input type="number" id="Daily_Calorie_Target" name="Daily Calorie Target" min="800" max="5000" placeholder="e.g. 2000" required>
+            </div>
+            <div class="form-row">
+                <label for="Protein">Protein <span class="hint">(g, 10-300)</span></label>
+                <input type="number" id="Protein" name="Protein" min="10" max="300" placeholder="e.g. 60" required>
+            </div>
+            <div class="form-row">
+                <label for="Sugar">Sugar <span class="hint">(g, 0-200)</span></label>
+                <input type="number" id="Sugar" name="Sugar" min="0" max="200" placeholder="e.g. 30" required>
+            </div>
+            <div class="form-row">
+                <label for="Sodium">Sodium <span class="hint">(mg, 0-6000)</span></label>
+                <input type="number" id="Sodium" name="Sodium" min="0" max="6000" placeholder="e.g. 1500" required>
+            </div>
+            <div class="form-row">
+                <label for="Calories">Calories <span class="hint">(kcal, 800-5000)</span></label>
+                <input type="number" id="Calories" name="Calories" min="800" max="5000" placeholder="e.g. 2200" required>
+            </div>
+            <div class="form-row">
+                <label for="Carbohydrates">Carbohydrates <span class="hint">(g, 10-600)</span></label>
+                <input type="number" id="Carbohydrates" name="Carbohydrates" min="10" max="600" placeholder="e.g. 250" required>
+            </div>
+            <div class="form-row">
+                <label for="Fiber">Fiber <span class="hint">(g, 0-100)</span></label>
+                <input type="number" id="Fiber" name="Fiber" min="0" max="100" placeholder="e.g. 25" required>
+            </div>
+            <div class="form-row">
+                <label for="Fat">Fat <span class="hint">(g, 5-200)</span></label>
+                <input type="number" id="Fat" name="Fat" min="5" max="200" placeholder="e.g. 70" required>
+            </div>
+            <button type="submit" class="btn">Predict Disease</button>
+        </form>
+        <div id="result"></div>
+    </div>
+    <script>
+        document.getElementById('predictForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const form = e.target;
+            const formData = new FormData(form);
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+            document.getElementById('result').textContent = 'Predicting...';
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (result && result.prediction) {
+                    document.getElementById('result').textContent = 'Predicted Disease(s): ' + result.prediction;
+                } else if (result && result.error) {
+                    document.getElementById('result').textContent = 'Error: ' + result.error;
+                } else {
+                    document.getElementById('result').textContent = 'No prediction returned.';
+                }
+            } catch (err) {
+                document.getElementById('result').textContent = 'Error: ' + err.message;
+            }
+        });
+    </script>
+</body>
+</html>
