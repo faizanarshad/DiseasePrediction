@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - HealthCare AI</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            color: #333;
+            margin: 0;
+        }
+        .container {
+            max-width: 900px;
+            margin: 60px auto 0 auto;
+            background: rgba(255,255,255,0.98);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            padding: 50px 30px 40px 30px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        .header p {
+            color: #666;
+            font-size: 1.2rem;
+        }
+        .mission {
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        .mission h2 {
+            color: #764ba2;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        .mission p {
+            color: #444;
+            font-size: 1.1rem;
+        }
+        .values {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+            margin-bottom: 50px;
+        }
+        .value-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 16px rgba(102,126,234,0.08);
+            padding: 30px 25px;
+            text-align: center;
+            flex: 1 1 220px;
+            max-width: 260px;
+        }
+        .value-card i {
+            font-size: 2rem;
+            color: #764ba2;
+            margin-bottom: 10px;
+        }
+        .value-card h3 {
+            font-size: 1.1rem;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+        .value-card p {
+            color: #555;
+            font-size: 1rem;
+        }
+        .team-section {
+            margin-top: 30px;
+        }
+        .team-section h2 {
+            color: #764ba2;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .team-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+        }
+        .team-member {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 16px rgba(102,126,234,0.08);
+            padding: 25px 20px;
+            text-align: center;
+            flex: 1 1 180px;
+            max-width: 200px;
+        }
+        .team-member img {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 12px;
+            border: 3px solid #667eea;
+        }
+        .team-member h4 {
+            margin: 0 0 5px 0;
+            color: #667eea;
+            font-size: 1.1rem;
+        }
+        .team-member p {
+            color: #888;
+            font-size: 0.98rem;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 40px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+        .back-link:hover {
+            color: #764ba2;
+        }
+        @media (max-width: 700px) {
+            .container { padding: 25px 5vw; }
+            .values, .team-grid { flex-direction: column; gap: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>About HealthCare AI</h1>
+            <p>Empowering better health decisions with artificial intelligence and data-driven insights.</p>
+        </div>
+        <div class="mission">
+            <h2>Our Mission</h2>
+            <p>To make advanced disease prediction and health analytics accessible to everyone, everywhere—enabling proactive, personalized, and data-driven healthcare for all.</p>
+        </div>
+        <div class="values">
+            <div class="value-card">
+                <i class="fas fa-brain"></i>
+                <h3>Innovation</h3>
+                <p>We leverage the latest in AI and machine learning to deliver accurate, actionable health insights.</p>
+            </div>
+            <div class="value-card">
+                <i class="fas fa-user-shield"></i>
+                <h3>Privacy</h3>
+                <p>Your data is always secure and confidential. We prioritize privacy in every aspect of our platform.</p>
+            </div>
+            <div class="value-card">
+                <i class="fas fa-users"></i>
+                <h3>Accessibility</h3>
+                <p>Our tools are designed for everyone—patients, doctors, and researchers—regardless of background.</p>
+            </div>
+            <div class="value-card">
+                <i class="fas fa-heartbeat"></i>
+                <h3>Impact</h3>
+                <p>We strive to improve lives by enabling early detection and informed health decisions.</p>
+            </div>
+        </div>
+        <div class="team-section">
+            <h2>Meet the Team</h2>
+            <div class="team-grid">
+                <div class="team-member">
+                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Team Member">
+                    <h4>Usman Muhammad</h4>
+                    <p>Lead Data Scientist</p>
+                </div>
+                <div class="team-member">
+                    <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Team Member">
+                    <h4>Sarah Lee</h4>
+                    <p>Full Stack Developer</p>
+                </div>
+                <div class="team-member">
+                    <img src="https://randomuser.me/api/portraits/men/65.jpg" alt="Team Member">
+                    <h4>John Smith</h4>
+                    <p>ML Engineer</p>
+                </div>
+                <div class="team-member">
+                    <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Team Member">
+                    <h4>Emily Chen</h4>
+                    <p>UI/UX Designer</p>
+                </div>
+            </div>
+        </div>
+        <a href="/" class="back-link"><i class="fas fa-arrow-left"></i> Back to Home</a>
+    </div>
+</body>
+</html> 
