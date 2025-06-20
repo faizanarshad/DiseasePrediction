@@ -9,8 +9,8 @@ app = Flask(__name__)
 
 # Load your trained model and encoders
 # Update these paths as needed
-MODEL_PATH = 'model.pkl'  # Path to your trained model
-ENCODER_PATH = 'encoders.pkl'  # Path to your encoders (LabelEncoders, MultiLabelBinarizer, etc.)
+MODEL_PATH = 'models/model.pkl'  # Path to your trained model
+ENCODER_PATH = 'models/encoders.pkl'  # Path to your encoders (LabelEncoders, MultiLabelBinarizer, etc.)
 
 # Load model and encoders from disk
 try:
