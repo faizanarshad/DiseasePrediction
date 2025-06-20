@@ -246,6 +246,20 @@ For support and questions:
 - Check the documentation in the Jupyter notebook
 - Review the API documentation
 
+## 🌟 Screenshots
+
+### Homepage
+![Homepage](assets/homepage.png)
+
+### Analytics Dashboard
+![Analytics Dashboard](assets/analytics.png)
+
+### Model Comparison
+![Model Comparison](assets/model_comparison.png)
+
+### Contact Page
+![Contact Page](assets/contact.png)
+
 ---
 
 **Note**: This application is for educational and informational purposes only. Predictions should not be used as a substitute for professional medical advice. 
