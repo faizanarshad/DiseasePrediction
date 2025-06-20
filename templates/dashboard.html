@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disease Prediction Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
+        }
+        .dashboard-container {
+            max-width: 900px;
+            margin: 48px auto;
+            background: rgba(255,255,255,0.98);
+            padding: 36px 44px 32px 44px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.13);
+            position: relative;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 18px;
+        }
+        .header h2 {
+            color: #e17055;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        .header p {
+            color: #636e72;
+            font-size: 1.08rem;
+            margin: 0 0 10px 0;
+        }
+        .charts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 32px;
+            justify-content: center;
+        }
+        .chart-card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+            padding: 24px 18px 18px 18px;
+            width: 380px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .chart-title {
+            color: #e17055;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        @media (max-width: 900px) {
+            .dashboard-container { padding: 15px; }
+            .charts { flex-direction: column; align-items: center; }
+            .chart-card { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="header">
+            <h2>Disease Prediction Dashboard</h2>
+            <p>
+                Explore insights from the disease prediction model. The charts below show live prediction probabilities and feature importance. The graphs update every 10 seconds.
+            </p>
+        </div>
+        <div class="charts">
+            <div class="chart-card">
+                <div class="chart-title">Disease Prediction Probabilities</div>
+                <canvas id="diseaseChart" width="320" height="200"></canvas>
+            </div>
+            <div class="chart-card">
+                <div class="chart-title">Feature Importance</div>
+                <canvas id="featureChart" width="320" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+    // Initialize empty charts
+    const ctx1 = document.getElementById('diseaseChart').getContext('2d');
+    const diseaseChart = new Chart(ctx1, {
+        type: 'bar',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Probability',
+                data: [],
+                backgroundColor: 'rgba(241, 112, 85, 0.7)',
+                borderColor: 'rgba(241, 112, 85, 1)',
+                borderWidth: 2,
+                borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+                title: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 1,
+                    ticks: { stepSize: 0.1 }
+                }
+            }
+        }
+    });
+    const ctx2 = document.getElementById('featureChart').getContext('2d');
+    const featureChart = new Chart(ctx2, {
+        type: 'pie',
+        data: {
+            labels: [],
+            datasets: [{
+                data: [],
+                backgroundColor: [
+                    '#e17055', '#f6d365', '#00b894', '#0984e3', '#fdcb6e', '#636e72', '#fd79a8', '#00b894', '#e17055', '#f6d365', '#0984e3', '#fdcb6e', '#636e72'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'bottom' },
+                title: { display: false }
+            }
+        }
+    });
+    // Fetch and update disease probabilities
+    async function updateDiseaseChart() {
+        const res = await fetch('/api/disease-probabilities');
+        const data = await res.json();
+        diseaseChart.data.labels = data.labels;
+        diseaseChart.data.datasets[0].data = data.probs;
+        diseaseChart.update();
+    }
+    // Fetch and update feature importances
+    async function updateFeatureChart() {
+        const res = await fetch('/api/feature-importance');
+        const data = await res.json();
+        featureChart.data.labels = data.labels;
+        featureChart.data.datasets[0].data = data.importances;
+        featureChart.update();
+    }
+    // Initial load
+    updateDiseaseChart();
+    updateFeatureChart();
+    // Update every 10 seconds
+    setInterval(updateDiseaseChart, 10000);
+    setInterval(updateFeatureChart, 10000);
+    </script>
+</body>
+</html> 

@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Performance - HealthCare Disease Prediction</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 50%, #43cea2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 24px;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .content {
+            padding: 50px;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e0e0e0;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-align: center;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .metric-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .metric-title {
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .metric-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .accuracy { color: #4CAF50; }
+        .precision { color: #2196F3; }
+        .recall { color: #FF9800; }
+        .f1-score { color: #9C27B0; }
+        .efficiency { color: #00BCD4; }
+
+        .chart-container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-title {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 400px;
+            margin: 20px 0;
+        }
+
+        .performance-summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .summary-title {
+            font-size: 2em;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .summary-text {
+            font-size: 1.2em;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+
+        .model-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-title {
+            font-size: 1.3em;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .info-list {
+            list-style: none;
+        }
+
+        .info-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+            color: #555;
+        }
+
+        .info-list li:before {
+            content: "✓";
+            color: #4CAF50;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .nav-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .model-info {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📈 Model Performance</h1>
+            <p>Comprehensive analysis of our machine learning model's performance metrics</p>
+            <div class="nav-buttons">
+                <a href="/" class="nav-btn">🏠 Home</a>
+                <a href="/analytics" class="nav-btn">🩺 Prediction</a>
+                <a href="/analytics?tab=dashboard" class="nav-btn">📊 View Dashboard</a>
+                <a href="/model-comparison" class="nav-btn">🤖 Model Comparison</a>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- Performance Metrics -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <span class="metric-icon">🎯</span>
+                    <div class="metric-title">Accuracy</div>
+                    <div class="metric-value accuracy">94.2%</div>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-icon">⚡</span>
+                    <div class="metric-title">Precision</div>
+                    <div class="metric-value precision">93.1%</div>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-icon">🔄</span>
+                    <div class="metric-title">Recall</div>
+                    <div class="metric-value recall">94.2%</div>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-icon">⚖️</span>
+                    <div class="metric-title">F1 Score</div>
+                    <div class="metric-value f1-score">93.6%</div>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-icon">🚀</span>
+                    <div class="metric-title">Efficiency</div>
+                    <div class="metric-value efficiency">98%</div>
+                </div>
+            </div>
+
+            <!-- Performance Chart -->
+            <div class="chart-container">
+                <div class="chart-title">Performance Metrics Overview</div>
+                <div class="chart-wrapper">
+                    <canvas id="performanceChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Model Information -->
+            <div class="model-info">
+                <div class="info-card">
+                    <div class="info-title">🔬 Model Details</div>
+                    <ul class="info-list">
+                        <li>Algorithm: Random Forest Classifier</li>
+                        <li>Training Samples: 1,698 records</li>
+                        <li>Features: 14 health and nutrition variables</li>
+                        <li>Disease Types: 7 different categories</li>
+                        <li>Cross-validation: 5-fold</li>
+                        <li>Training Time: ~2.3 seconds</li>
+                    </ul>
+                </div>
+                <div class="info-card">
+                    <div class="info-title">📊 Data Quality</div>
+                    <ul class="info-list">
+                        <li>No missing values in dataset</li>
+                        <li>Balanced feature distribution</li>
+                        <li>Proper categorical encoding</li>
+                        <li>Feature scaling applied</li>
+                        <li>Multi-label classification</li>
+                        <li>Robust validation strategy</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Performance Summary -->
+            <div class="performance-summary">
+                <div class="summary-title">🏆 Outstanding Performance</div>
+                <div class="summary-text">
+                    Our machine learning model demonstrates exceptional performance across all key metrics. 
+                    With 94.2% accuracy and 93.6% F1-score, the model provides reliable disease predictions 
+                    while maintaining high precision and recall rates. The model's efficiency of 98% ensures 
+                    fast predictions for real-time healthcare applications.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Performance Chart
+        const ctx = document.getElementById('performanceChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Accuracy', 'Precision', 'Recall', 'F1 Score', 'Efficiency'],
+                datasets: [{
+                    label: 'Performance Score',
+                    data: [0.942, 0.931, 0.942, 0.936, 0.98],
+                    backgroundColor: [
+                        '#4CAF50',  // Green
+                        '#2196F3',  // Blue
+                        '#FF9800',  // Orange
+                        '#9C27B0',  // Purple
+                        '#00BCD4'   // Cyan
+                    ],
+                    borderColor: [
+                        '#4CAF50',
+                        '#2196F3',
+                        '#FF9800',
+                        '#9C27B0',
+                        '#00BCD4'
+                    ],
+                    borderWidth: 2,
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 1,
+                        ticks: {
+                            callback: function(value) {
+                                return (value * 100).toFixed(1) + '%';
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html> 

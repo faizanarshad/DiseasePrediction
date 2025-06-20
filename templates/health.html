@@ -4,62 +4,97 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Disease Prediction</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Montserrat', Arial, sans-serif;
             margin: 0;
             padding: 0;
             min-height: 100vh;
-            background: linear-gradient(120deg, #89f7fe 0%, #66a6ff 100%);
-            /* You can use an image background instead: */
-            /* background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1500&q=80') no-repeat center center fixed; background-size: cover; */
+            background: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
         }
         .container {
             max-width: 600px;
-            margin: 40px auto;
-            background: rgba(255,255,255,0.95);
-            padding: 30px 40px;
-            border-radius: 16px;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.13);
+            margin: 48px auto;
+            background: rgba(255,255,255,0.98);
+            padding: 36px 44px 32px 44px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.13);
+            position: relative;
         }
-        h2 {
+        .header {
             text-align: center;
-            color: #2c3e50;
-            margin-bottom: 24px;
+            margin-bottom: 18px;
         }
-        form { display: flex; flex-wrap: wrap; gap: 16px; }
-        label { flex: 1 0 120px; font-weight: 500; }
+        .header h2 {
+            color: #e17055;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        .header p {
+            color: #636e72;
+            font-size: 1.08rem;
+            margin: 0 0 10px 0;
+        }
+        form { 
+            display: flex; 
+            flex-direction: column;
+            gap: 18px; 
+        }
+        .form-row { 
+            width: 100%; 
+            display: flex; 
+            flex-direction: row;
+            align-items: center; 
+            gap: 12px;
+        }
+        label { 
+            flex: 0 0 180px; 
+            font-weight: 600; 
+            color: #2d3436; 
+            text-align: right;
+            margin-right: 10px;
+        }
         input, select {
-            flex: 2 0 200px;
-            padding: 8px;
-            border: 1px solid #b2bec3;
-            border-radius: 6px;
+            flex: 1 1 0;
+            padding: 10px;
+            border: 1.5px solid #b2bec3;
+            border-radius: 8px;
             font-size: 15px;
             background: #f8fafc;
+            transition: border 0.2s;
         }
-        .form-row { width: 100%; display: flex; align-items: center; }
+        input:focus, select:focus {
+            border: 1.5px solid #e17055;
+            outline: none;
+        }
         .btn {
             width: 100%;
-            padding: 12px;
-            background: linear-gradient(90deg, #2980b9 0%, #6dd5fa 100%);
+            padding: 14px;
+            background: linear-gradient(90deg, #e17055 0%, #f6d365 100%);
             color: #fff;
             border: none;
-            border-radius: 6px;
-            font-size: 18px;
-            font-weight: 600;
+            border-radius: 8px;
+            font-size: 20px;
+            font-weight: 700;
             cursor: pointer;
-            margin-top: 20px;
-            transition: background 0.2s;
+            margin-top: 18px;
+            box-shadow: 0 2px 8px rgba(241, 196, 15, 0.08);
+            transition: background 0.2s, box-shadow 0.2s;
         }
         .btn:hover {
-            background: linear-gradient(90deg, #1c5d85 0%, #2980b9 100%);
+            background: linear-gradient(90deg, #fda085 0%, #e17055 100%);
+            box-shadow: 0 4px 16px rgba(241, 196, 15, 0.13);
         }
         #result {
-            margin-top: 28px;
+            margin-top: 32px;
             text-align: center;
-            font-size: 20px;
-            color: #27ae60;
-            font-weight: 600;
+            font-size: 22px;
+            color: #00b894;
+            font-weight: 700;
+            min-height: 28px;
+            letter-spacing: 0.5px;
         }
         .hint {
             font-size: 12px;
@@ -68,14 +103,20 @@
         }
         @media (max-width: 600px) {
             .container { padding: 15px; }
-            label, input, select { flex: 1 0 100%; }
-            .form-row { flex-direction: column; align-items: stretch; }
+            form { gap: 10px; }
+            .form-row { flex-direction: column; align-items: stretch; gap: 4px; }
+            label { text-align: left; margin-right: 0; margin-bottom: 2px; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Disease Prediction</h2>
+        <div class="header">
+            <h2>Disease Prediction</h2>
+            <p>
+                Enter your health and nutrition details below. This tool uses a machine learning model to predict possible diseases based on your food, nutrition, and lifestyle data. All predictions are for informational purposes only and not a substitute for professional medical advice.
+            </p>
+        </div>
         <form id="predictForm">
             <div class="form-row">
                 <label for="Ages">Age <span class="hint">(years, 1-120)</span></label>
@@ -151,6 +192,19 @@
             <button type="submit" class="btn">Predict Disease</button>
         </form>
         <div id="result"></div>
+        <div id="dashboard" style="margin-top:40px;">
+            <h3 style="text-align:center;color:#e17055;">Model Dashboard</h3>
+            <p style="text-align:center;color:#636e72;max-width:500px;margin:0 auto 18px auto;">
+                This dashboard visualizes the prediction probabilities for each disease and provides information about the underlying model.
+            </p>
+            <div style="display:flex;flex-direction:column;align-items:center;">
+                <canvas id="diseaseChart" width="400" height="220" style="background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.07);"></canvas>
+                <div id="modelInfo" style="margin-top:24px;text-align:center;color:#636e72;font-size:1rem;">
+                    <b>Model:</b> Random Forest Classifier<br>
+                    <b>Features Used:</b> Age, Gender, Height, Weight, Activity Level, Dietary Preference, Daily Calorie Target, Protein, Sugar, Sodium, Calories, Carbohydrates, Fiber, Fat
+                </div>
+            </div>
+        </div>
     </div>
     <script>
         document.getElementById('predictForm').addEventListener('submit', async function(e) {
@@ -170,7 +224,7 @@
                 });
                 const result = await response.json();
                 if (result && result.prediction) {
-                    document.getElementById('result').textContent = 'Predicted Disease(s): ' + result.prediction;
+                    document.getElementById('result').textContent = 'Predicted Disease(s): ' + (Array.isArray(result.prediction) ? result.prediction.join(', ') : result.prediction);
                 } else if (result && result.error) {
                     document.getElementById('result').textContent = 'Error: ' + result.error;
                 } else {
@@ -180,6 +234,46 @@
                 document.getElementById('result').textContent = 'Error: ' + err.message;
             }
         });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+    // Sample data for demonstration (replace with real probabilities if available)
+    const diseaseLabels = ["WeightGain", "Hypertension", "HeartDisease", "Diabetes", "Acne", "KidneyDisease", "WeightLoss"];
+    const diseaseProbs = [0.7, 0.1, 0.05, 0.05, 0.03, 0.04, 0.03];
+    const ctx = document.getElementById('diseaseChart').getContext('2d');
+    const diseaseChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: diseaseLabels,
+            datasets: [{
+                label: 'Prediction Probability',
+                data: diseaseProbs,
+                backgroundColor: 'rgba(241, 112, 85, 0.7)',
+                borderColor: 'rgba(241, 112, 85, 1)',
+                borderWidth: 2,
+                borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+                title: {
+                    display: true,
+                    text: 'Disease Prediction Probabilities',
+                    color: '#2d3436',
+                    font: { size: 18 }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 1,
+                    ticks: { stepSize: 0.1 }
+                }
+            }
+        }
+    });
     </script>
 </body>
 </html>

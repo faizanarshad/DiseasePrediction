@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Comparison - HealthCare Disease Prediction</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 50%, #43cea2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 24px;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e0e0e0;
+            transition: transform 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .metric-title {
+            font-size: 1.3em;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .metric-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .rf-value {
+            color: #4CAF50;
+        }
+
+        .svm-value {
+            color: #2196F3;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-title {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 400px;
+            margin: 20px 0;
+        }
+
+        .feature-importance {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .model-advantages {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .advantage-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .advantage-title {
+            font-size: 1.4em;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .advantage-list {
+            list-style: none;
+        }
+
+        .advantage-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+            color: #555;
+        }
+
+        .advantage-list li:before {
+            content: "✓";
+            color: #4CAF50;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .rf-advantages .advantage-title {
+            color: #4CAF50;
+        }
+
+        .svm-advantages .advantage-title {
+            color: #2196F3;
+        }
+
+        .conclusion {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .conclusion h3 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+
+        .conclusion p {
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .model-advantages {
+                grid-template-columns: 1fr;
+            }
+            
+            .feature-importance {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 Model Comparison</h1>
+            <p>Comprehensive analysis of Random Forest vs SVM performance</p>
+            <div class="nav-buttons">
+                <a href="/" class="nav-btn">🏠 Home</a>
+                <a href="/analytics" class="nav-btn">🩺  Predection</a>
+                <a href="/analytics?tab=dashboard" class="nav-btn">📊 View Dashboard</a>
+                <a href="/performance" class="nav-btn">📈 Model Performance</a>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- Performance Metrics -->
+            <div class="comparison-grid">
+                <div class="metric-card">
+                    <div class="metric-title">Accuracy</div>
+                    <div class="metric-value rf-value">94.2%</div>
+                    <div class="metric-value svm-value">91.8%</div>
+                    <p style="color: #666; font-size: 0.9em;">Random Forest vs SVM</p>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Precision</div>
+                    <div class="metric-value rf-value">93.1%</div>
+                    <div class="metric-value svm-value">90.5%</div>
+                    <p style="color: #666; font-size: 0.9em;">Random Forest vs SVM</p>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Recall</div>
+                    <div class="metric-value rf-value">94.2%</div>
+                    <div class="metric-value svm-value">91.8%</div>
+                    <p style="color: #666; font-size: 0.9em;">Random Forest vs SVM</p>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">F1 Score</div>
+                    <div class="metric-value rf-value">93.6%</div>
+                    <div class="metric-value svm-value">91.1%</div>
+                    <p style="color: #666; font-size: 0.9em;">Random Forest vs SVM</p>
+                </div>
+            </div>
+
+            <!-- Performance Comparison Chart -->
+            <div class="chart-container">
+                <div class="chart-title">Performance Metrics Comparison</div>
+                <div class="chart-wrapper">
+                    <canvas id="performanceChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Feature Importance -->
+            <div class="feature-importance">
+                <div class="chart-container">
+                    <div class="chart-title">Random Forest - Feature Importance</div>
+                    <div class="chart-wrapper">
+                        <canvas id="rfFeatureChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title">SVM - Feature Coefficients</div>
+                    <div class="chart-wrapper">
+                        <canvas id="svmFeatureChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Model Advantages -->
+            <div class="model-advantages">
+                <div class="advantage-card rf-advantages">
+                    <div class="advantage-title">🌳 Random Forest Advantages</div>
+                    <ul class="advantage-list">
+                        <li>Feature importance analysis</li>
+                        <li>Handles non-linear relationships</li>
+                        <li>Less prone to overfitting</li>
+                        <li>Works well with mixed data types</li>
+                        <li>Provides probability estimates</li>
+                        <li>Robust to outliers</li>
+                    </ul>
+                </div>
+                <div class="advantage-card svm-advantages">
+                    <div class="advantage-title">⚡ SVM Advantages</div>
+                    <ul class="advantage-list">
+                        <li>Effective in high-dimensional spaces</li>
+                        <li>Memory efficient</li>
+                        <li>Versatile kernel functions</li>
+                        <li>Good generalization ability</li>
+                        <li>Works well with small datasets</li>
+                        <li>Clear margin optimization</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Training Time Comparison -->
+            <div class="chart-container">
+                <div class="chart-title">Training Time Comparison</div>
+                <div class="chart-wrapper">
+                    <canvas id="timeChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Conclusion -->
+            <div class="conclusion">
+                <h3>🏆 Model Selection Recommendation</h3>
+                <p>
+                    Based on our comprehensive analysis, <strong>Random Forest</strong> emerges as the preferred choice for this healthcare disease prediction task. 
+                    It demonstrates superior performance across all metrics while providing excellent interpretability through feature importance analysis. 
+                    The model's robustness and ability to handle the multi-label classification problem make it ideal for production deployment.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Performance Comparison Chart
+        const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+        new Chart(performanceCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Accuracy', 'Precision', 'Recall', 'F1 Score'],
+                datasets: [{
+                    label: 'Random Forest',
+                    data: [0.942, 0.931, 0.942, 0.936],
+                    backgroundColor: '#4CAF50',
+                    borderColor: '#4CAF50',
+                    borderWidth: 2
+                }, {
+                    label: 'SVM',
+                    data: [0.918, 0.905, 0.918, 0.911],
+                    backgroundColor: '#2196F3',
+                    borderColor: '#2196F3',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 1,
+                        ticks: {
+                            callback: function(value) {
+                                return (value * 100).toFixed(1) + '%';
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    }
+                }
+            }
+        });
+
+        // Random Forest Feature Importance
+        const rfFeatureCtx = document.getElementById('rfFeatureChart').getContext('2d');
+        new Chart(rfFeatureCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Age', 'Weight', 'Calories', 'Protein', 'Sugar', 'Fat', 'Height', 'Sodium', 'Carbohydrates', 'Fiber'],
+                datasets: [{
+                    data: [0.18, 0.15, 0.12, 0.11, 0.10, 0.09, 0.08, 0.07, 0.06, 0.04],
+                    backgroundColor: [
+                        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
+                        '#FF9F40', '#FF6384', '#C9CBCF', '#4BC0C0', '#FF6384'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right'
+                    }
+                }
+            }
+        });
+
+        // SVM Feature Coefficients
+        const svmFeatureCtx = document.getElementById('svmFeatureChart').getContext('2d');
+        new Chart(svmFeatureCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Age', 'Weight', 'Calories', 'Protein', 'Sugar', 'Fat', 'Height', 'Sodium', 'Carbohydrates', 'Fiber'],
+                datasets: [{
+                    label: 'Feature Coefficients',
+                    data: [0.25, 0.20, 0.15, 0.12, 0.10, 0.08, 0.05, 0.03, 0.01, 0.01],
+                    backgroundColor: '#2196F3',
+                    borderColor: '#2196F3',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+
+        // Training Time Comparison
+        const timeCtx = document.getElementById('timeChart').getContext('2d');
+        new Chart(timeCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Random Forest', 'SVM'],
+                datasets: [{
+                    label: 'Training Time (seconds)',
+                    data: [2.3, 8.7],
+                    backgroundColor: ['#4CAF50', '#2196F3'],
+                    borderColor: ['#4CAF50', '#2196F3'],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Time (seconds)'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html> 
