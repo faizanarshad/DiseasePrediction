@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthCare Analytics Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+            margin-bottom: 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            background: linear-gradient(90deg, #43cea2 0%, #667eea 100%, #f093fb 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 16px rgba(102,126,234,0.10);
+        }
+
+        .nav-btn:hover {
+            background: linear-gradient(90deg, #f093fb 0%, #43cea2 100%);
+            color: #fff;
+            transform: translateY(-2px) scale(1.04);
+            box-shadow: 0 8px 24px rgba(102,126,234,0.18);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section-nav {
+            text-align: center;
+            margin-bottom: 40px;
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-btn {
+            margin: 0 10px;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .section-btn:hover::before {
+            left: 100%;
+        }
+
+        .section-btn.active {
+            background: linear-gradient(90deg, #43cea2 0%, #667eea 100%, #f093fb 100%);
+            color: white;
+            transform: translateY(-2px) scale(1.04);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.18);
+            border: none;
+        }
+
+        .section-btn:not(.active) {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.08);
+            transition: all 0.3s cubic-bezier(.4,2,.3,1);
+        }
+
+        .section-btn:not(.active):hover {
+            background: linear-gradient(90deg, #f093fb 0%, #43cea2 100%);
+            color: white;
+            border: none;
+            transform: translateY(-2px) scale(1.04);
+            box-shadow: 0 8px 24px rgba(102,126,234,0.15);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            margin-bottom: 30px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: none; }
+        }
+
+        /* Form styles */
+        .prediction-form {
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .form-header h2 {
+            color: #333;
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .form-header p {
+            color: #666;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        form { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 25px; 
+        }
+
+        .form-row { 
+            width: 100%; 
+            display: flex; 
+            flex-direction: row; 
+            align-items: center; 
+            gap: 20px; 
+            padding: 15px;
+            background: #f8f9ff;
+            border-radius: 15px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .form-row:focus-within {
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        label { 
+            flex: 0 0 200px; 
+            font-weight: 600; 
+            color: #333; 
+            text-align: left; 
+            margin-right: 10px; 
+            font-size: 1rem;
+        }
+
+        input, select {
+            flex: 1 1 0;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            background: white;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        input:focus, select:focus {
+            border: 2px solid #667eea;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+        }
+
+        #result {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 1.2rem;
+            color: #4CAF50;
+            font-weight: 600;
+            min-height: 30px;
+            padding: 20px;
+            background: #f8f9ff;
+            border-radius: 15px;
+            border-left: 5px solid #4CAF50;
+            transition: all 0.3s ease;
+        }
+
+        .metrics-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
+            padding: 40px;
+            margin-bottom: 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metrics-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .metric {
+            text-align: center;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+
+        .metric:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .metric-title {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .metric-value {
+            color: white;
+            font-size: 2.2rem;
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .charts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.3s ease;
+            border: 1px solid #f0f0f0;
+        }
+
+        .chart-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .chart-title {
+            color: #333;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .nav-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .section-nav {
+                padding: 20px;
+            }
+            
+            .section-btn {
+                margin: 5px;
+                padding: 12px 20px;
+                font-size: 0.9rem;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+            
+            label {
+                text-align: left;
+                margin-right: 0;
+                margin-bottom: 5px;
+                flex: none;
+            }
+            
+            .charts {
+                grid-template-columns: 1fr;
+            }
+            
+            .prediction-form {
+                padding: 30px 20px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-chart-line"></i> HealthCare Analytics Dashboard</h1>
+                <p>Comprehensive disease prediction and analytics platform powered by advanced machine learning</p>
+                <div class="nav-buttons">
+                    <a href="/" class="nav-btn">
+                        <i class="fas fa-home"></i>
+                        Home
+                    </a>
+                    <a href="/analytics?tab=dashboard" class="nav-btn">
+                        <i class="fas fa-tachometer-alt"></i>
+                        View Dashboard
+                    </a>
+                    <a href="/performance" class="nav-btn">
+                        <i class="fas fa-chart-bar"></i>
+                        Model Performance
+                    </a>
+                    <a href="/model-comparison" class="nav-btn">
+                        <i class="fas fa-robot"></i>
+                        Model Comparison
+                    </a>
+                    <a href="/about" class="nav-btn">
+                        <i class="fas fa-info-circle"></i>
+                        About
+                    </a>
+                    <a href="/contact" class="nav-btn">
+                        <i class="fas fa-envelope"></i>
+                        Contact
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="tab-content" id="tab-prediction">
+                <div class="prediction-form">
+                    <div class="form-header">
+                        <h2>Disease Prediction</h2>
+                        <p>Enter your health and nutrition details below. This tool uses advanced machine learning to predict possible diseases based on your lifestyle data. <strong>All predictions are for informational purposes only and not a substitute for professional medical advice.</strong></p>
+                    </div>
+                    <form id="predictForm">
+                        <div class="form-row">
+                            <label for="Ages">Age <span style="color: #666; font-size: 0.9em;">(years, 1-120)</span></label>
+                            <input type="number" id="Ages" name="Ages" min="1" max="120" placeholder="e.g. 25" required>
+                        </div>
+                        <div class="form-row">
+                            <label for="Gender">Gender</label>
+                            <select id="Gender" name="Gender" required>
+                                <option value="">Select Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <label for="Height">Height <span style="color: #666; font-size: 0.9em;">(cm, 100-250)</span></label>
+                            <input type="number" id="Height" name="Height" min="100" max="250" placeholder="e.g. 175" required>
+                        </div>
+                        <div class="form-row">
+                            <label for="Weight">Weight <span style="color: #666; font-size: 0.9em;">(kg, 30-200)</span></label>
+                            <input type="number" id="Weight" name="Weight" min="30" max="200" placeholder="e.g. 70" required>
+                        </div>
+                        <div class="form-row">
+                            <label for="Activity Level">Activity Level</label>
+                            <select id="Activity Level" name="Activity Level" required>
+                                <option value="">Select Activity Level</option>
+                                <option value="Sedentary">Sedentary</option>
+                                <option value="Lightly Active">Lightly Active</option>
+                                <option value="Moderately Active">Moderately Active</option>
+                                <option value="Very Active">Very Active</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <label for="Dietary Preference">Dietary Preference</label>
+                            <select id="Dietary Preference" name="Dietary Preference" required>
+                                <option value="">Select Dietary Preference</option>
+                                <option value="Omnivore">Omnivore</option>
+                                <option value="Vegetarian">Vegetarian</option>
+                                <option value="Vegan">Vegan</option>
+                                <option value="Pescatarian">Pescatarian</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <label for="Daily Calorie Target">Daily Calorie Target <span style="color: #666; font-size: 0.9em;">(kcal, 1000-5000)</span></label>
+                            <input type="number" id="Daily Calorie Target" name="Daily Calorie Target" min="1000" max="5000" placeholder="e.g. 2000" required>
+                        </div>
+                        <div class="form-row">
+                            <label for="Protein">Protein <span style="color: #666; font-size: 0.9em;">(g, 20-300)</span></label>
+                            <input type="number" id="Protein" name="Protein" min="20" max="300" placeholder="e.g. 120" required>
+                        </div>
+                        <div class="form-row">
+                            <label for="Sugar">Sugar <span style="color: #666; font-size: 0.9em;">(g, 0-500)</span></label>
+                            <input type="number" id="Sugar" name="Sugar" min="0" max="500" step="0.1" placeholder="e.g. 100.0" required>
+                        </div>
+                        <div class="form-row">
+                            <label for="Sodium">Sodium <span style="color: #666; font-size: 0.9em;">(g, 0-100)</span></label>
+                            <input type="number" id="Sodium" name="Sodium" min="0" max="100" step="0.1" placeholder="e.g. 20.0" required>
+                        </div>
+                        <div class="form-row">
+                            <label for="Calories">Calories <span style="color: #666; font-size: 0.9em;">(kcal, 500-5000)</span></label>
+                            <input type="number" id="Calories" name="Calories" min="500" max="5000" placeholder="e.g. 2000" required>
+                        </div>
+                        <div class="form-row">
+                            <label for="Carbohydrates">Carbohydrates <span style="color: #666; font-size: 0.9em;">(g, 50-800)</span></label>
+                            <input type="number" id="Carbohydrates" name="Carbohydrates" min="50" max="800" placeholder="e.g. 250" required>
+                        </div>
+                        <div class="form-row">
+                            <label for="Fiber">Fiber <span style="color: #666; font-size: 0.9em;">(g, 0-100)</span></label>
+                            <input type="number" id="Fiber" name="Fiber" min="0" max="100" step="0.1" placeholder="e.g. 30.0" required>
+                        </div>
+                        <div class="form-row">
+                            <label for="Fat">Fat <span style="color: #666; font-size: 0.9em;">(g, 10-200)</span></label>
+                            <input type="number" id="Fat" name="Fat" min="10" max="200" placeholder="e.g. 60" required>
+                        </div>
+                        <button type="submit" class="btn">🔮 Predict Disease</button>
+                    </form>
+                    <div id="result"></div>
+                </div>
+            </div>
+
+            <!-- Dashboard Tab -->
+            <div class="tab-content" id="tab-dashboard">
+                <div class="metrics-card">
+                    <div class="metric">
+                        <div class="metric-title">Model Accuracy</div>
+                        <div class="metric-value">94.2%</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-title">Predictions Today</div>
+                        <div class="metric-value">1,247</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-title">Active Users</div>
+                        <div class="metric-value">892</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-title">System Uptime</div>
+                        <div class="metric-value">99.9%</div>
+                    </div>
+                </div>
+
+                <div class="charts">
+                    <div class="chart-card">
+                        <div class="chart-title">Disease Prediction Probabilities</div>
+                        <canvas id="diseaseChart" width="300" height="200"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-title">Feature Importance</div>
+                        <canvas id="featureChart" width="300" height="200"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-title">Confusion Matrix</div>
+                        <canvas id="confMatrixChart" width="300" height="200"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-title">ROC Curve</div>
+                        <canvas id="rocChart" width="300" height="200"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-title">Precision-Recall Curve</div>
+                        <canvas id="prChart" width="300" height="200"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-title">Class Distribution</div>
+                        <canvas id="classDistChart" width="300" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Tab -->
+            <div class="tab-content" id="tab-performance">
+                <div class="metrics-card">
+                    <div class="metric">
+                        <div class="metric-title">Accuracy</div>
+                        <div class="metric-value">94.2%</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-title">Precision</div>
+                        <div class="metric-value">93.1%</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-title">Recall</div>
+                        <div class="metric-value">94.2%</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-title">F1 Score</div>
+                        <div class="metric-value">93.6%</div>
+                    </div>
+                </div>
+
+                <div class="charts">
+                    <div class="chart-card" style="grid-column: span 2;">
+                        <div class="chart-title">Performance Metrics Overview</div>
+                        <canvas id="perfChart" width="600" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function to show different sections
+        function showSection(sectionName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(tc => tc.classList.remove('active'));
+            
+            // Show the selected section
+            document.getElementById('tab-' + sectionName).classList.add('active');
+            
+            // Update button styles
+            const sectionBtns = document.querySelectorAll('.section-btn');
+            sectionBtns.forEach(btn => {
+                btn.style.background = 'white';
+                btn.style.color = '#667eea';
+                btn.style.border = '2px solid #667eea';
+            });
+            
+            // Update active button
+            event.target.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+            event.target.style.color = 'white';
+            event.target.style.border = 'none';
+            
+            // Initialize charts if dashboard is selected
+            if (sectionName === 'dashboard') {
+                initializeDashboardCharts();
+            }
+            
+            // Initialize performance chart if performance tab is selected
+            if (sectionName === 'performance') {
+                initializePerformanceChart();
+            }
+            
+            // Update URL without page reload
+            const newUrl = new URL(window.location);
+            newUrl.searchParams.set('tab', sectionName);
+            window.history.pushState({}, '', newUrl);
+        }
+
+        // Function to initialize dashboard charts
+        function initializeDashboardCharts() {
+            // Check if charts are already initialized
+            if (window.dashboardChartsInitialized) {
+                return;
+            }
+            
+            // Initialize all dashboard charts
+            initializeDiseaseChart();
+            initializeFeatureChart();
+            initializeConfusionMatrixChart();
+            initializeROCChart();
+            initializePRChart();
+            initializeClassDistChart();
+            initializeUserActivityChart();
+            initializeCorrelationChart();
+            initializeModelHistoryChart();
+            
+            // Mark as initialized
+            window.dashboardChartsInitialized = true;
+        }
+
+        // Function to get URL parameters
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+
+        // On page load, show the correct tab based on the URL parameter
+        const tabParam = getUrlParameter('tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        tabContents.forEach(tc => tc.classList.remove('active'));
+        if (tabParam && ['prediction', 'dashboard', 'performance'].includes(tabParam)) {
+            document.getElementById('tab-' + tabParam).classList.add('active');
+            if (tabParam === 'dashboard') {
+                setTimeout(() => { initializeDashboardCharts(); }, 100);
+            }
+            if (tabParam === 'performance') {
+                setTimeout(() => { initializePerformanceChart(); }, 100);
+            }
+        } else {
+            document.getElementById('tab-prediction').classList.add('active');
+        }
+
+        // Prediction form AJAX
+        document.getElementById('predictForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const form = e.target;
+            const formData = new FormData(form);
+            const data = {};
+            formData.forEach((value, key) => { data[key] = value; });
+            
+            document.getElementById('result').textContent = '🔮 Predicting...';
+            document.getElementById('result').style.color = '#FF9800';
+            
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                
+                if (result && result.prediction) {
+                    document.getElementById('result').textContent = '🎯 Predicted Disease(s): ' + (Array.isArray(result.prediction) ? result.prediction.join(', ') : result.prediction);
+                    document.getElementById('result').style.color = '#4CAF50';
+                } else if (result && result.error) {
+                    document.getElementById('result').textContent = '❌ Error: ' + result.error;
+                    document.getElementById('result').style.color = '#F44336';
+                } else {
+                    document.getElementById('result').textContent = '❓ No prediction returned.';
+                    document.getElementById('result').style.color = '#F44336';
+                }
+            } catch (err) {
+                document.getElementById('result').textContent = '❌ Error: ' + err.message;
+                document.getElementById('result').style.color = '#F44336';
+            }
+        });
+
+        // Chart initialization functions
+        function initializeDiseaseChart() {
+            const ctx1 = document.getElementById('diseaseChart').getContext('2d');
+            new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: ["WeightGain", "Hypertension", "HeartDisease", "Diabetes", "Acne", "KidneyDisease", "WeightLoss"],
+                    datasets: [{
+                        label: 'Probability',
+                        data: [0.7, 0.1, 0.05, 0.05, 0.03, 0.04, 0.03],
+                        backgroundColor: [
+                            '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEEAD', '#D4A5A5', '#9AC1D9'
+                        ],
+                        borderWidth: 2,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { 
+                        legend: { display: false },
+                        title: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 1,
+                            ticks: { stepSize: 0.1 }
+                        }
+                    }
+                }
+            });
+        }
+
+        function initializeFeatureChart() {
+            const ctx2 = document.getElementById('featureChart').getContext('2d');
+            new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: ["Age", "Weight", "Calories", "Protein", "Sugar", "Fat", "Height"],
+                    datasets: [{
+                        data: [20, 18, 15, 12, 10, 8, 7],
+                        backgroundColor: [
+                            '#FF9F1C', '#2EC4B6', '#E71D36', '#011627', '#41B3A3', '#85DCB', '#E8A87C'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        title: { display: false }
+                    }
+                }
+            });
+        }
+
+        function initializeConfusionMatrixChart() {
+            const ctx4 = document.getElementById('confMatrixChart').getContext('2d');
+            new Chart(ctx4, {
+                type: 'bar',
+                data: {
+                    labels: ['True Negatives', 'False Positives', 'False Negatives', 'True Positives'],
+                    datasets: [{
+                        label: 'Count',
+                        data: [850, 45, 32, 771],
+                        backgroundColor: [
+                            '#4CAF50', '#FF9800', '#F44336', '#2196F3'
+                        ],
+                        borderWidth: 2,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { 
+                        legend: { display: false },
+                        title: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 200 }
+                        }
+                    }
+                }
+            });
+        }
+
+        function initializeROCChart() {
+            const ctx5 = document.getElementById('rocChart').getContext('2d');
+            new Chart(ctx5, {
+                type: 'line',
+                data: {
+                    labels: ['0.0', '0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9', '1.0'],
+                    datasets: [{
+                        label: 'ROC Curve',
+                        data: [0, 0.15, 0.28, 0.42, 0.55, 0.68, 0.78, 0.85, 0.92, 0.97, 1.0],
+                        borderColor: '#4CAF50',
+                        backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }, {
+                        label: 'Random Classifier',
+                        data: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+                        borderColor: '#9E9E9E',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { 
+                        legend: { position: 'top' },
+                        title: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'False Positive Rate' }
+                        },
+                        y: {
+                            title: { display: true, text: 'True Positive Rate' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function initializePRChart() {
+            const ctx6 = document.getElementById('prChart').getContext('2d');
+            new Chart(ctx6, {
+                type: 'line',
+                data: {
+                    labels: ['0.0', '0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9', '1.0'],
+                    datasets: [{
+                        label: 'Precision-Recall Curve',
+                        data: [0.95, 0.94, 0.93, 0.92, 0.91, 0.90, 0.89, 0.88, 0.87, 0.86, 0.85],
+                        borderColor: '#FF9800',
+                        backgroundColor: 'rgba(255, 152, 0, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { 
+                        legend: { position: 'top' },
+                        title: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Recall' }
+                        },
+                        y: {
+                            title: { display: true, text: 'Precision' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function initializeClassDistChart() {
+            const ctx7 = document.getElementById('classDistChart').getContext('2d');
+            new Chart(ctx7, {
+                type: 'bar',
+                data: {
+                    labels: ["WeightGain", "Hypertension", "HeartDisease", "Diabetes", "Acne", "KidneyDisease", "WeightLoss"],
+                    datasets: [{
+                        label: 'Training Samples',
+                        data: [1200, 180, 95, 85, 65, 45, 28],
+                        backgroundColor: [
+                            '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEEAD', '#D4A5A5', '#9AC1D9'
+                        ],
+                        borderWidth: 2,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { 
+                        legend: { display: false },
+                        title: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 200 }
+                        }
+                    }
+                }
+            });
+        }
+
+        function initializeUserActivityChart() {
+            const ctx8 = document.getElementById('userActivityChart').getContext('2d');
+            const hours = Array.from({length: 24}, (_, i) => i);
+            const activityData = [12, 8, 5, 3, 2, 1, 4, 8, 15, 22, 28, 35, 42, 38, 32, 28, 25, 30, 35, 28, 22, 18, 15, 10];
+            
+            new Chart(ctx8, {
+                type: 'line',
+                data: {
+                    labels: hours.map(h => h + ':00'),
+                    datasets: [{
+                        label: 'Active Users',
+                        data: activityData,
+                        borderColor: '#9C27B0',
+                        backgroundColor: 'rgba(156, 39, 176, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { 
+                        legend: { display: false },
+                        title: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Hour of Day' }
+                        },
+                        y: {
+                            title: { display: true, text: 'Active Users' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function initializeCorrelationChart() {
+            const ctx9 = document.getElementById('correlationChart').getContext('2d');
+            new Chart(ctx9, {
+                type: 'bar',
+                data: {
+                    labels: ["Age-Weight", "Calories-Fat", "Protein-Weight", "Sugar-Diabetes", "Sodium-Hypertension"],
+                    datasets: [{
+                        label: 'Correlation',
+                        data: [0.75, 0.68, 0.72, 0.65, 0.58],
+                        backgroundColor: [
+                            '#4CAF50', '#2196F3', '#FF9800', '#9C27B0', '#00BCD4'
+                        ],
+                        borderWidth: 2,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { 
+                        legend: { display: false },
+                        title: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 1,
+                            ticks: { stepSize: 0.1 }
+                        }
+                    }
+                }
+            });
+        }
+
+        function initializeModelHistoryChart() {
+            const ctx10 = document.getElementById('modelHistoryChart').getContext('2d');
+            const versions = ['v1.0', 'v1.1', 'v1.2', 'v1.3', 'v2.0'];
+            const accuracies = [0.89, 0.91, 0.92, 0.93, 0.942];
+            
+            new Chart(ctx10, {
+                type: 'line',
+                data: {
+                    labels: versions,
+                    datasets: [{
+                        label: 'Model Accuracy',
+                        data: accuracies,
+                        borderColor: '#E91E63',
+                        backgroundColor: 'rgba(233, 30, 99, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { 
+                        legend: { display: false },
+                        title: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 1,
+                            ticks: { 
+                                callback: function(value) {
+                                    return (value * 100).toFixed(1) + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function initializePerformanceChart() {
+            const ctx3 = document.getElementById('perfChart').getContext('2d');
+            new Chart(ctx3, {
+                type: 'bar',
+                data: {
+                    labels: ['Accuracy', 'Precision', 'Recall', 'F1 Score'],
+                    datasets: [{
+                        label: 'Score',
+                        data: [0.942, 0.931, 0.942, 0.936],
+                        backgroundColor: [
+                            '#4CAF50', '#2196F3', '#FF9800', '#9C27B0'
+                        ],
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 1,
+                            ticks: { 
+                                callback: function(value) {
+                                    return (value * 100).toFixed(1) + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html> 

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disease Prediction</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
+        }
+        .container {
+            max-width: 600px;
+            margin: 48px auto;
+            background: rgba(255,255,255,0.98);
+            padding: 36px 44px 32px 44px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.13);
+            position: relative;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 18px;
+        }
+        .header h2 {
+            color: #e17055;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        .header p {
+            color: #636e72;
+            font-size: 1.08rem;
+            margin: 0 0 10px 0;
+        }
+        form { 
+            display: flex; 
+            flex-direction: column;
+            gap: 18px; 
+        }
+        .form-row { 
+            width: 100%; 
+            display: flex; 
+            flex-direction: row;
+            align-items: center; 
+            gap: 12px;
+        }
+        label { 
+            flex: 0 0 180px; 
+            font-weight: 600; 
+            color: #2d3436; 
+            text-align: right;
+            margin-right: 10px;
+        }
+        input, select {
+            flex: 1 1 0;
+            padding: 10px;
+            border: 1.5px solid #b2bec3;
+            border-radius: 8px;
+            font-size: 15px;
+            background: #f8fafc;
+            transition: border 0.2s;
+        }
+        input:focus, select:focus {
+            border: 1.5px solid #e17055;
+            outline: none;
+        }
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(90deg, #e17055 0%, #f6d365 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 20px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 18px;
+            box-shadow: 0 2px 8px rgba(241, 196, 15, 0.08);
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+        .btn:hover {
+            background: linear-gradient(90deg, #fda085 0%, #e17055 100%);
+            box-shadow: 0 4px 16px rgba(241, 196, 15, 0.13);
+        }
+        #result {
+            margin-top: 32px;
+            text-align: center;
+            font-size: 22px;
+            color: #00b894;
+            font-weight: 700;
+            min-height: 28px;
+            letter-spacing: 0.5px;
+        }
+        .hint {
+            font-size: 12px;
+            color: #636e72;
+            margin-left: 8px;
+        }
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            form { gap: 10px; }
+            .form-row { flex-direction: column; align-items: stretch; gap: 4px; }
+            label { text-align: left; margin-right: 0; margin-bottom: 2px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Disease Prediction</h2>
+            <p>
+                Enter your health and nutrition details below. This tool uses a machine learning model to predict possible diseases based on your food, nutrition, and lifestyle data. All predictions are for informational purposes only and not a substitute for professional medical advice.
+            </p>
+        </div>
+        <form id="predictForm">
+            <div class="form-row">
+                <label for="Ages">Age <span class="hint">(years, 1-120)</span></label>
+                <input type="number" id="Ages" name="Ages" min="1" max="120" placeholder="e.g. 25" required>
+            </div>
+            <div class="form-row">
+                <label for="Gender">Gender</label>
+                <select id="Gender" name="Gender" required>
+                    <option value="">Select</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label for="Height">Height <span class="hint">(cm, 50-250)</span></label>
+                <input type="number" id="Height" name="Height" min="50" max="250" placeholder="e.g. 170" required>
+            </div>
+            <div class="form-row">
+                <label for="Weight">Weight <span class="hint">(kg, 10-250)</span></label>
+                <input type="number" id="Weight" name="Weight" min="10" max="250" placeholder="e.g. 65" required>
+            </div>
+            <div class="form-row">
+                <label for="Activity_Level">Activity Level</label>
+                <select id="Activity_Level" name="Activity Level" required>
+                    <option value="">Select</option>
+                    <option value="Sedentary">Sedentary</option>
+                    <option value="Lightly Active">Lightly Active</option>
+                    <option value="Moderately Active">Moderately Active</option>
+                    <option value="Very Active">Very Active</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label for="Dietary_Preference">Dietary Preference</label>
+                <select id="Dietary_Preference" name="Dietary Preference" required>
+                    <option value="">Select</option>
+                    <option value="Omnivore">Omnivore</option>
+                    <option value="Vegetarian">Vegetarian</option>
+                    <option value="Vegan">Vegan</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label for="Daily_Calorie_Target">Daily Calorie Target <span class="hint">(kcal, 800-5000)</span></label>
+                <input type="number" id="Daily_Calorie_Target" name="Daily Calorie Target" min="800" max="5000" placeholder="e.g. 2000" required>
+            </div>
+            <div class="form-row">
+                <label for="Protein">Protein <span class="hint">(g, 10-300)</span></label>
+                <input type="number" id="Protein" name="Protein" min="10" max="300" placeholder="e.g. 60" required>
+            </div>
+            <div class="form-row">
+                <label for="Sugar">Sugar <span class="hint">(g, 0-200)</span></label>
+                <input type="number" id="Sugar" name="Sugar" min="0" max="200" placeholder="e.g. 30" required>
+            </div>
+            <div class="form-row">
+                <label for="Sodium">Sodium <span class="hint">(mg, 0-6000)</span></label>
+                <input type="number" id="Sodium" name="Sodium" min="0" max="6000" placeholder="e.g. 1500" required>
+            </div>
+            <div class="form-row">
+                <label for="Calories">Calories <span class="hint">(kcal, 800-5000)</span></label>
+                <input type="number" id="Calories" name="Calories" min="800" max="5000" placeholder="e.g. 2200" required>
+            </div>
+            <div class="form-row">
+                <label for="Carbohydrates">Carbohydrates <span class="hint">(g, 10-600)</span></label>
+                <input type="number" id="Carbohydrates" name="Carbohydrates" min="10" max="600" placeholder="e.g. 250" required>
+            </div>
+            <div class="form-row">
+                <label for="Fiber">Fiber <span class="hint">(g, 0-100)</span></label>
+                <input type="number" id="Fiber" name="Fiber" min="0" max="100" placeholder="e.g. 25" required>
+            </div>
+            <div class="form-row">
+                <label for="Fat">Fat <span class="hint">(g, 5-200)</span></label>
+                <input type="number" id="Fat" name="Fat" min="5" max="200" placeholder="e.g. 70" required>
+            </div>
+            <button type="submit" class="btn">Predict Disease</button>
+        </form>
+        <div id="result"></div>
+        <div id="dashboard" style="margin-top:40px;">
+            <h3 style="text-align:center;color:#e17055;">Model Dashboard</h3>
+            <p style="text-align:center;color:#636e72;max-width:500px;margin:0 auto 18px auto;">
+                This dashboard visualizes the prediction probabilities for each disease and provides information about the underlying model.
+            </p>
+            <div style="display:flex;flex-direction:column;align-items:center;">
+                <canvas id="diseaseChart" width="400" height="220" style="background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.07);"></canvas>
+                <div id="modelInfo" style="margin-top:24px;text-align:center;color:#636e72;font-size:1rem;">
+                    <b>Model:</b> Random Forest Classifier<br>
+                    <b>Features Used:</b> Age, Gender, Height, Weight, Activity Level, Dietary Preference, Daily Calorie Target, Protein, Sugar, Sodium, Calories, Carbohydrates, Fiber, Fat
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.getElementById('predictForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const form = e.target;
+            const formData = new FormData(form);
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+            document.getElementById('result').textContent = 'Predicting...';
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (result && result.prediction) {
+                    document.getElementById('result').textContent = 'Predicted Disease(s): ' + (Array.isArray(result.prediction) ? result.prediction.join(', ') : result.prediction);
+                } else if (result && result.error) {
+                    document.getElementById('result').textContent = 'Error: ' + result.error;
+                } else {
+                    document.getElementById('result').textContent = 'No prediction returned.';
+                }
+            } catch (err) {
+                document.getElementById('result').textContent = 'Error: ' + err.message;
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+    // Sample data for demonstration (replace with real probabilities if available)
+    const diseaseLabels = ["WeightGain", "Hypertension", "HeartDisease", "Diabetes", "Acne", "KidneyDisease", "WeightLoss"];
+    const diseaseProbs = [0.7, 0.1, 0.05, 0.05, 0.03, 0.04, 0.03];
+    const ctx = document.getElementById('diseaseChart').getContext('2d');
+    const diseaseChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: diseaseLabels,
+            datasets: [{
+                label: 'Prediction Probability',
+                data: diseaseProbs,
+                backgroundColor: 'rgba(241, 112, 85, 0.7)',
+                borderColor: 'rgba(241, 112, 85, 1)',
+                borderWidth: 2,
+                borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+                title: {
+                    display: true,
+                    text: 'Disease Prediction Probabilities',
+                    color: '#2d3436',
+                    font: { size: 18 }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 1,
+                    ticks: { stepSize: 0.1 }
+                }
+            }
+        }
+    });
+    </script>
+</body>
+</html>
